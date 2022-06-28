@@ -1,0 +1,36 @@
+import os
+import itertools
+import numpy as np
+from tqdm import tqdm
+from PIL import Image as im
+
+
+############# length/width of a square ##################
+
+a = 4
+
+#######################################################
+
+def deconv(array, zoom=300):
+    row = []
+    for x in range(array.shape[0]):
+        column = []
+        for y in range(array.shape[1]):
+            column.append(np.repeat(array[x][y], zoom**2).reshape(zoom, zoom))
+        column = np.hstack(column)
+        row.append(column)
+    row = np.vstack(row)
+    return row
+
+
+pix = a ** 2
+
+try:
+    os.mkdir(f'./pics_{a}_{a}')
+except:
+    pass
+
+lst = list(itertools.product([0, 1], repeat=pix))
+for x in tqdm(range(len(lst))):
+    im.fromarray(deconv(np.array(lst[x]).reshape(int(a), int(a)).astype(np.uint8) * 255)) \
+    .save(f'./pics_{a}_{a}/{x}.png')
